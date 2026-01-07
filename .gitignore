@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+*.pyc
+thumbs/
+logs/
+photo_catalog.json
+photo_catalog.db
+app_config.json
+*.tmp

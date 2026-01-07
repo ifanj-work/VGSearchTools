@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Vivagoal Photo Finder</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+  </head>
+  <body>
+    <header class="app-header">
+      <div class="brand">
+        {% if ui_logo_url %}
+        <img src="{{ ui_logo_url }}" alt="Logo" class="logo">
+        {% endif %}
+        <div class="title">{{ ui_title }}</div>
+      </div>
+      <div class="actions">
+        <button id="rescanBtn" class="btn">Rescan</button>
+        <span id="scanStatus" class="status">Idle</span>
+      </div>
+    </header>
+    <main class="container">
+      {% block content %}{% endblock %}
+    </main>
+
+    <script src="/static/js/app.js"></script>
+  </body>
+  </html>

@@ -1,0 +1,43 @@
+{% extends 'layout.html' %}
+{% block content %}
+  <section class="hero">
+    <div class="hero-title">
+      <span class="accent">Search</span> the broadest range of Vivagoal photo assets
+    </div>
+    <div class="hero-sub">Find, preview, and download from LAN and Drive in seconds.</div>
+
+    <div class="search-shell">
+      <div class="chip">
+        <select id="categoryFilter" class="chip-select" disabled>
+          <option>All Sources</option>
+        </select>
+      </div>
+      <input type="text" id="query" class="search-input" placeholder="Search photos (e.g., Jay Idzes 2024)" autofocus>
+      <button id="searchBtn" class="btn icon">🔍</button>
+    </div>
+  </section>
+
+  <section class="config-panel">
+    <div class="panel-title">Sources</div>
+    <div class="source-bar">
+      <input type="text" id="sourcesInput" placeholder="Sources (semicolon-separated), e.g. Z:\; G:\; \\172.16.0.25\data\MULTIMEDIA ARCHIVE\VIVAGOAL\LIPUTAN">
+      <button id="saveSourcesBtn" class="btn">Save Sources & Rescan</button>
+    </div>
+  </section>
+
+  <section class="results-wrap">
+    <div id="results" class="grid"></div>
+  </section>
+
+  <div id="modal" class="modal hidden">
+    <div class="modal-content">
+      <span id="modalClose" class="modal-close">×</span>
+      <img id="modalImg" alt="Preview">
+      <div class="meta" id="modalMeta"></div>
+      <div class="modal-actions">
+        <a id="downloadBtn" class="btn" href="#" download>Download</a>
+        <button id="openBtn" class="btn">Open in Explorer</button>
+      </div>
+    </div>
+  </div>
+{% endblock %}
