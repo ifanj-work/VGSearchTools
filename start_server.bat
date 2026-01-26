@@ -34,10 +34,7 @@ echo ok> ".venv\deps_installed.txt"
 :start_server
 if not exist "%WAITRESS%" goto :waitress_missing
 echo [Info] Launching server in background... http://localhost:%PORT%
-start "Vivagoal Photo Finder" "%WAITRESS%" --listen=0.0.0.0:%PORT% app:app
-echo %date% %time% - Server started on http://localhost:%PORT%>> "server_start.log"
-REM Popup notification
-powershell -NoProfile -Command "Add-Type -AssemblyName System.Windows.Forms; [System.Windows.Forms.MessageBox]::Show('Vivagoal Photo Finder is running at http://localhost:%PORT%', 'Server Started', 'OK', 'Information')" >nul 2>nul
+start "Vivagoal Photo Finder" "%WAITRESS%" --listen=127.0.0.1:%PORT% app:app
 timeout /t 2 /nobreak > nul
 
 set "URL=http://localhost:%PORT%/"

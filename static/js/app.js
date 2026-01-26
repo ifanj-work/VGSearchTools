@@ -2,6 +2,7 @@
   const qInput = document.getElementById('query');
   const searchBtn = document.getElementById('searchBtn');
   const resultsEl = document.getElementById('results');
+  const resultsTitle = document.getElementById('resultsTitle');
   const rescanBtn = document.getElementById('rescanBtn');
   const scanStatus = document.getElementById('scanStatus');
   const sourcesInput = document.getElementById('sourcesInput');
@@ -15,6 +16,26 @@
   const openBtn = document.getElementById('openBtn');
 
   let lastResults = [];
+  const STORAGE_KEY = 'vg_recent_results';
+
+  function loadRecent() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return null;
+      const data = JSON.parse(raw);
+      if (!data || !Array.isArray(data.results)) return null;
+      return data;
+    } catch {
+      return null;
+    }
+  }
+
+  function saveRecent(query, results) {
+    try {
+      const payload = { query, results, ts: Date.now() };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+    } catch {}
+  }
 
   function escHtml(s) {
     return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -29,13 +50,17 @@
       const r = await fetch(`/search?${params.toString()}`);
       const data = await r.json();
       lastResults = data.results || [];
-      renderResults(lastResults);
+      saveRecent(q, lastResults);
+      renderResults(lastResults, q ? `Results for "${q}"` : 'Recent searches');
     } catch (e) {
       resultsEl.innerHTML = '<div class="muted">Search failed.</div>';
     }
   }
 
-  function renderResults(items) {
+  function renderResults(items, title) {
+    if (resultsTitle) {
+      resultsTitle.textContent = title || 'Recent searches';
+    }
     if (!items.length) { resultsEl.innerHTML = '<div class="muted">No results.</div>'; return; }
     const html = items.map(it => `
       <div class="card" data-id="${it.id}">
@@ -115,6 +140,14 @@
       // Populate year options from catalog count if provided (optional future enhancement)
     } catch {}
   })();
+
+  // Load recent results on first screen
+  const recent = loadRecent();
+  if (recent && Array.isArray(recent.results)) {
+    lastResults = recent.results;
+    const title = recent.query ? `Recent search: "${recent.query}"` : 'Recent searches';
+    renderResults(lastResults, title);
+  }
 
   async function saveSources() {
     try {

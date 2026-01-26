@@ -6,7 +6,7 @@ import threading
 import hashlib
 import sqlite3
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 try:
     from PIL import Image, UnidentifiedImageError  # type: ignore
@@ -107,6 +107,12 @@ class CatalogManager:
 
         try:
             cur = self.db_conn.cursor()
+            # Use WAL journal mode for better concurrent read/write performance
+            try:
+                cur.execute("PRAGMA journal_mode=WAL")
+                cur.execute("PRAGMA synchronous=NORMAL")
+            except Exception:
+                pass
             cur.execute(
                 """
                 CREATE TABLE IF NOT EXISTS photos (
@@ -426,16 +432,34 @@ class CatalogManager:
         except OSError:
             pass
         try:
+            tmp = thumb + ".tmp"
             with Image.open(src) as im:  # type: ignore
                 im.load()
                 im = im.convert("RGB")
                 im.thumbnail((self.cfg.thumb_size, self.cfg.thumb_size))
-                im.save(thumb, format="JPEG", quality=85)
+                # Save to temp file first then atomically replace
+                im.save(tmp, format="JPEG", quality=85)
+            try:
+                os.replace(tmp, thumb)
+            except Exception:
+                # Fallback to rename if replace fails
+                try:
+                    os.rename(tmp, thumb)
+                except Exception:
+                    pass
         except Exception:
             try:
                 if PIL_AVAILABLE and Image is not None:
+                    tmp = thumb + ".tmp"
                     img = Image.new("RGB", (64, 64), color=(30, 30, 35))  # type: ignore
-                    img.save(thumb, format="JPEG", quality=70)
+                    img.save(tmp, format="JPEG", quality=70)
+                    try:
+                        os.replace(tmp, thumb)
+                    except Exception:
+                        try:
+                            os.rename(tmp, thumb)
+                        except Exception:
+                            pass
                     return thumb
             except Exception:
                 pass
@@ -447,13 +471,15 @@ class CatalogManager:
         self,
         query: str,
         limit: Optional[int] = None,
+        offset: int = 0,
         year: Optional[int] = None,
         month: Optional[int] = None,
         sort: str = "date_desc",
-    ) -> List[Dict[str, Any]]:
+    ) -> Tuple[List[Dict[str, Any]], int]:
         q = (query or "").strip()
         tokens = [t for t in q.lower().split() if t]
         lim = limit or self.cfg.search_limit
+        off = max(0, int(offset or 0))
 
         def matches(it: Dict[str, Any]) -> bool:
             if year and it.get("year") != year:
@@ -500,7 +526,9 @@ class CatalogManager:
         else:  # default date_desc
             results.sort(key=lambda x: (x.get("date", ""), x.get("filename", "")), reverse=True)
 
-        return results[:lim]
+        total = len(results)
+        sliced = results[off : off + lim]
+        return sliced, total
 
     # ---------- Utilities ----------
     def get_item(self, item_id: str) -> Optional[Dict[str, Any]]:

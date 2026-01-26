@@ -40,13 +40,17 @@ def create_app() -> Flask:
         year = request.args.get("year")
         month = request.args.get("month")
         sort = request.args.get("sort") or "date_desc"
+        limit = request.args.get("limit")
+        offset = request.args.get("offset")
         year_i = int(year) if year and year.isdigit() else None
         month_i = int(month) if month and month.isdigit() else None
+        lim = int(limit) if limit and str(limit).isdigit() else None
+        off = int(offset) if offset and str(offset).isdigit() else 0
 
-        results = catalog.search(q, year=year_i, month=month_i, sort=sort)
-        # Log query
+        results, total = catalog.search(q, limit=lim, offset=off, year=year_i, month=month_i, sort=sort)
+        # Log query (log total matches, not just returned slice)
         try:
-            qlog.info(f"query=%r results=%d", q, len(results))
+            qlog.info(f"query=%r total=%d returned=%d", q, total, len(results))
         except Exception:
             pass
         # Return minimal fields for listing
@@ -61,7 +65,7 @@ def create_app() -> Flask:
                     "thumb": f"/thumbnail/{it['id']}",
                 }
             )
-        return jsonify({"results": payload})
+        return jsonify({"results": payload, "total": total, "limit": lim or catalog.cfg.search_limit, "offset": off})
 
     @app.get("/thumbnail/<item_id>")
     def thumbnail(item_id: str):

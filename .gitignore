@@ -5,5 +5,7 @@ thumbs/
 logs/
 photo_catalog.json
 photo_catalog.db
+photo_catalog.db-shm
+photo_catalog.db-wal
 app_config.json
 *.tmp
