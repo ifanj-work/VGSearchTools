@@ -75,8 +75,8 @@ exit /b 1
 echo.
 echo [Success] Server is running properly!
 echo [Info] Opening browser...
-REM Success Popup (Auto-closes in 3 seconds)
-mshta vbscript:Execute("CreateObject(""WScript.Shell"").Popup ""Server is running properly!"", 3, ""Vivagoal Photo Finder"", 64:close")
+REM Success Popup (Persistent)
+mshta vbscript:Execute("MsgBox ""Server is running properly!"" & vbCrLf & ""You can now use the tool in your browser."", 64, ""Vivagoal Photo Finder"":close")
 echo.
 
 set "URL=http://localhost:%PORT%/"

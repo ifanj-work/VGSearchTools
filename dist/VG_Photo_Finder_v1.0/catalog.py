@@ -107,16 +107,6 @@ class CatalogManager:
             cur.execute("CREATE INDEX IF NOT EXISTS idx_photos_year_month ON photos(year, month)")
             cur.execute("CREATE INDEX IF NOT EXISTS idx_photos_folder ON photos(folder)")
             
-            # Migration: Ensure 'size' column exists (for existing DBs)
-            try:
-                cur.execute("SELECT size FROM photos LIMIT 1")
-            except sqlite3.OperationalError:
-                # Column check failed, assuming missing
-                try:
-                    cur.execute("ALTER TABLE photos ADD COLUMN size INTEGER")
-                except Exception as e:
-                    print(f"Migration Error (add size): {e}")
-
             self.db_conn.commit()
         except Exception as e:
             print(f"DB Init Error: {e}")
@@ -489,7 +479,7 @@ class CatalogManager:
         
         # Fixed: SELECT path column correctly (not literal string)
         sql = f"""
-            SELECT id, filename, folder, date, year, month, path, size
+            SELECT id, filename, folder, date, year, month, path
             FROM photos 
             {where_clause}
             ORDER BY {order_by}

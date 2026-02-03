@@ -61,8 +61,6 @@ def create_app() -> Flask:
                     "id": it["id"],
                     "filename": it["filename"],
                     "folder": it["folder"],
-                    "path": it["path"],
-                    "size": it.get("size", 0),
                     "date": it.get("date"),
                     "thumb": f"/thumbnail/{it['id']}",
                 }
@@ -80,7 +78,15 @@ def create_app() -> Flask:
         # Let Flask infer mimetype from filename (supports fallback-to-original case)
         return send_file(path, as_attachment=False, conditional=True)
 
-
+    @app.get("/download/<item_id>")
+    def download(item_id: str):
+        item = catalog.get_item(item_id)
+        if not item:
+            abort(404)
+        path = item.get("path")
+        if not path or not os.path.exists(path):
+            abort(404)
+        return send_file(path, as_attachment=True, download_name=item.get("filename"))
 
     @app.post("/open")
     def open_in_explorer():

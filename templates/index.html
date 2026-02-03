@@ -1,43 +1,130 @@
-{% extends 'layout.html' %}
-{% block content %}
-  <section class="hero">
-    <div class="hero-title">
-      <span class="accent">Search</span> the broadest range of Vivagoal photo assets
+{% extends 'layout.html' %} {% block content %}
+<section class="hero">
+  <div class="hero-title">
+    <span class="accent">Search</span> the broadest range of Vivagoal photo
+    assets
+  </div>
+  <div class="hero-sub">
+    Find, preview, and access from LAN and Drive in seconds.
+  </div>
+
+  <div class="search-shell">
+    <input
+      type="text"
+      id="query"
+      class="search-input"
+      placeholder="Search photos (e.g., Jay Idzes 2024)"
+      autofocus
+    />
+    <button id="searchBtn" class="btn icon" aria-label="Search">
+      <svg class="icon-svg" viewBox="0 0 24 24" aria-hidden="true">
+        <path
+          d="M15.5 14h-.79l-.28-.27a6 6 0 10-.71.71l.27.28v.79l5 5 1.5-1.5-5-5zm-6.5 0a4 4 0 110-8 4 4 0 010 8z"
+        ></path>
+      </svg>
+    </button>
+  </div>
+</section>
+
+<section class="config-panel">
+  <div class="panel-title">Sources</div>
+  <div class="source-bar">
+    <input
+      type="text"
+      id="sourcesInput"
+      placeholder="Sources (semicolon-separated), e.g. Z:\; G:\; \\172.16.0.25\data\MULTIMEDIA ARCHIVE\VIVAGOAL\LIPUTAN"
+    />
+    <button id="saveSourcesBtn" class="btn">Save Sources & Rescan</button>
+  </div>
+</section>
+
+<section class="results-wrap">
+  <div id="resultsTitle" class="results-title">Recent searches</div>
+  <div id="results" class="grid"></div>
+</section>
+
+<div id="modal" class="modal hidden">
+  <div class="modal-content">
+    <span id="modalClose" class="modal-close">×</span>
+
+    <div class="modal-left">
+      <div class="modal-header-left">
+        <div id="modalFilename" class="modal-filename"></div>
+        <div id="modalPathSimple" class="modal-path-simple"></div>
+      </div>
+
+      <div class="modal-image-area">
+        <button id="prevBtn" class="nav-btn prev" aria-label="Previous">
+          <svg viewBox="0 0 24 24">
+            <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
+          </svg>
+        </button>
+        <div class="img-container">
+          <img id="modalImg" alt="Preview" />
+        </div>
+        <button id="nextBtn" class="nav-btn next" aria-label="Next">
+          <svg viewBox="0 0 24 24">
+            <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" />
+          </svg>
+        </button>
+      </div>
     </div>
-    <div class="hero-sub">Find, preview, and download from LAN and Drive in seconds.</div>
 
-    <div class="search-shell">
-      <input type="text" id="query" class="search-input" placeholder="Search photos (e.g., Jay Idzes 2024)" autofocus>
-      <button id="searchBtn" class="btn icon" aria-label="Search">
-        <svg class="icon-svg" viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M15.5 14h-.79l-.28-.27a6 6 0 10-.71.71l.27.28v.79l5 5 1.5-1.5-5-5zm-6.5 0a4 4 0 110-8 4 4 0 010 8z"></path>
-        </svg>
-      </button>
-    </div>
-  </section>
+    <div class="modal-right">
+      <div class="details-title">PHOTO DETAILS</div>
 
-  <section class="config-panel">
-    <div class="panel-title">Sources</div>
-    <div class="source-bar">
-      <input type="text" id="sourcesInput" placeholder="Sources (semicolon-separated), e.g. Z:\; G:\; \\172.16.0.25\data\MULTIMEDIA ARCHIVE\VIVAGOAL\LIPUTAN">
-      <button id="saveSourcesBtn" class="btn">Save Sources & Rescan</button>
-    </div>
-  </section>
+      <div class="detail-item">
+        <div class="detail-label">
+          <svg class="detail-icon" viewBox="0 0 24 24">
+            <path
+              d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11z"
+            />
+          </svg>
+          Date
+        </div>
+        <div id="modalDate" class="detail-value"></div>
+      </div>
 
-  <section class="results-wrap">
-    <div id="resultsTitle" class="results-title">Recent searches</div>
-    <div id="results" class="grid"></div>
-  </section>
+      <div class="detail-item">
+        <div class="detail-label">
+          <svg class="detail-icon" viewBox="0 0 24 24">
+            <path
+              d="M20 6h-8l-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 14H4V8h16v12z"
+            />
+          </svg>
+          Event
+        </div>
+        <div id="modalEvent" class="detail-value"></div>
+      </div>
 
-  <div id="modal" class="modal hidden">
-    <div class="modal-content">
-      <span id="modalClose" class="modal-close">×</span>
-      <img id="modalImg" alt="Preview">
-      <div class="meta" id="modalMeta"></div>
-      <div class="modal-actions">
-        <a id="downloadBtn" class="btn" href="#" download>Download</a>
-        <button id="openBtn" class="btn">Open in Explorer</button>
+      <div class="detail-item">
+        <div class="detail-label">
+          <svg class="detail-icon" viewBox="0 0 24 24">
+            <path
+              d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"
+            />
+          </svg>
+          File Size
+        </div>
+        <div id="modalSize" class="detail-value"></div>
+      </div>
+
+      <div class="detail-item">
+        <div class="detail-label">Full Path</div>
+        <div id="modalFullPath" class="detail-path-box"></div>
+      </div>
+
+      <div class="modal-actions-right">
+        <button id="openBtn" class="btn primary full-width">
+          <svg class="btn-icon" viewBox="0 0 24 24">
+            <path
+              d="M19 4H5c-1.11 0-2 .9-2 2v12c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H5V8h14v10z"
+            />
+          </svg>
+          Open File Location
+        </button>
       </div>
     </div>
   </div>
+</div>
 {% endblock %}

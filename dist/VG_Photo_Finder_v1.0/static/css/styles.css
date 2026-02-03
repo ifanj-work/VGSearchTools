@@ -21,16 +21,8 @@ body {
 body {
   margin: 0;
   background:
-    radial-gradient(
-      800px 240px at 50% -80px,
-      rgba(237, 28, 36, 0.18),
-      transparent 70%
-    ),
-    radial-gradient(
-      1200px 400px at 10% -120px,
-      rgba(255, 255, 255, 0.05),
-      transparent 70%
-    ),
+    radial-gradient(800px 240px at 50% -80px, rgba(237, 28, 36, 0.18), transparent 70%),
+    radial-gradient(1200px 400px at 10% -120px, rgba(255, 255, 255, 0.05), transparent 70%),
     var(--bg);
   color: var(--text);
   font-family: "Trebuchet MS", "Segoe UI Variable", "Calibri", sans-serif;
@@ -128,6 +120,7 @@ body {
   outline: none;
 }
 
+
 .btn {
   padding: 10px 14px;
   border: 1px solid var(--border);
@@ -215,10 +208,7 @@ body {
   border: 1px solid var(--border);
   border-radius: 12px;
   overflow: hidden;
-  transition:
-    transform 0.15s ease,
-    box-shadow 0.15s ease,
-    border-color 0.15s ease;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
 }
 
 .card img {
@@ -268,61 +258,32 @@ body {
 }
 
 .modal-content {
-  background: #000;
-  border: 1px solid #333;
+  background: var(--card);
+  border: 1px solid var(--border);
   border-radius: 12px;
-  width: 1200px;
-  height: 800px;
-  max-width: 95vw;
-  max-height: 95vh;
-  display: flex;
-  flex-direction: row;
-  position: relative;
-  overflow: hidden;
-  padding: 0;
-}
-
-/* --- Left Column (Image & Main Info) --- */
-.modal-left {
-  flex: 1;
+  padding: 6px;
+  /* Enforce 1:1 aspect ratio logic mostly on the image container, but user asked for "modal content" */
+  /* We'll make the modal somewhat square-ish or at least the image area square */
+  /* width: min(90vw, 85vh); <-- removed fixed width constraint */
+  width: auto;
+  max-width: 90vw;
+  max-height: 90vh;
   display: flex;
   flex-direction: column;
   position: relative;
-  background: #000;
-  overflow: hidden;
 }
 
-.modal-header-left {
-  padding: 20px 24px 10px;
-  z-index: 10;
-}
-
-.modal-filename {
-  font-size: 24px;
-  font-weight: 700;
-  color: #fff;
-  margin-bottom: 4px;
-  white-space: normal;
-  overflow-wrap: break-word;
-  word-break: break-all;
-}
-
-.modal-path-simple {
-  font-size: 13px;
-  color: #71717a; /* Zinc-500 */
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.modal-image-area {
-  flex: 1;
+.modal-body {
   position: relative;
+  width: 720px;
+  height: 576px;
+  background: #000;
   display: flex;
   align-items: center;
   justify-content: center;
+  border-radius: 8px;
   overflow: hidden;
-  padding: 0 40px 20px; /* Space for nav buttons */
+  margin-bottom: 12px;
 }
 
 .img-container {
@@ -333,98 +294,61 @@ body {
   justify-content: center;
 }
 
-.img-container img {
+.modal-close {
+  position: absolute;
+  top: -30px;
+  right: -10px;
+  cursor: pointer;
+  font-size: 28px;
+  color: #fff;
+  z-index: 20;
+}
+
+.modal img {
   max-width: 100%;
   max-height: 100%;
   object-fit: contain;
   display: block;
 }
 
-/* --- Right Column (Details) --- */
-.modal-right {
-  width: 320px;
-  background: #000;
-  border-left: 1px solid #27272a;
+.modal-box {
   display: flex;
   flex-direction: column;
-  padding: 24px;
-  gap: 24px;
-  flex-shrink: 0;
-}
-
-.details-title {
-  font-size: 14px;
-  font-weight: 600;
-  color: #fff;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-bottom: 8px;
-}
-
-.detail-item {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.detail-label {
-  display: flex;
   align-items: center;
-  gap: 8px;
+  margin-bottom: 12px;
+  text-align: center;
+  max-width: 720px;
+  align-self: center;
+}
+
+.modal-filename {
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 4px;
+  white-space: normal;
+  overflow-wrap: break-word;
+}
+
+.modal-path {
   font-size: 13px;
-  color: #a1a1aa; /* Zinc-400 */
+  color: var(--muted);
+  white-space: normal;
+  overflow-wrap: break-word;
 }
 
-.detail-icon {
-  width: 16px;
-  height: 16px;
-  fill: currentColor;
-}
-
-.detail-value {
-  font-size: 15px;
-  font-weight: 500;
-  color: #fff;
-}
-
-.detail-path-box {
-  background: #27272a;
-  border-radius: 6px;
-  padding: 10px;
-  font-size: 11px;
-  color: #d4d4d8;
-  line-height: 1.4;
-  word-break: break-all;
-  max-height: 80px;
-  overflow-y: auto;
-}
-
-.modal-actions-right {
-  margin-top: auto;
-}
-
-.btn.full-width {
-  width: 100%;
+.modal-actions {
   display: flex;
-  align-items: center;
+  gap: 10px;
   justify-content: center;
-  gap: 8px;
-  padding: 12px;
-  font-size: 14px;
 }
 
-.btn-icon {
-  width: 18px;
-  height: 18px;
-  fill: currentColor;
-}
-
-/* --- Navigation Buttons --- */
+/* Navigation Buttons */
 .nav-btn {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.5);
   border: none;
   color: #fff;
   width: 40px;
@@ -434,17 +358,19 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s;
-  z-index: 20;
+  opacity: 0;
+  transition: opacity 0.2s;
+  z-index: 5;
 }
 
-.nav-btn:hover {
-  background: rgba(255, 255, 255, 0.2);
+.modal-body:hover .nav-btn {
+  opacity: 1;
 }
 
 .nav-btn.prev {
   left: 10px;
 }
+
 .nav-btn.next {
   right: 10px;
 }
@@ -455,37 +381,17 @@ body {
   height: 24px;
 }
 
-/* --- Close Button --- */
-.modal-close {
-  position: absolute;
-  top: 16px;
-  right: 16px;
-  z-index: 50;
-  font-size: 28px;
-  line-height: 1;
-  color: #fff;
-  cursor: pointer;
-  opacity: 0.7;
-  transition: opacity 0.2s;
+.nav-btn:hover {
+  background: rgba(237, 28, 36, 0.8);
 }
 
-.modal-close:hover {
-  opacity: 1;
-}
-
-@media (max-width: 900px) {
-  .modal-content {
-    flex-direction: column;
-    height: 90vh;
-    overflow-y: auto;
+@media (max-width: 720px) {
+  .search-shell {
+    flex-wrap: wrap;
+    border-radius: 18px;
   }
-  .modal-right {
+
+  .btn.icon {
     width: 100%;
-    border-left: none;
-    border-top: 1px solid #27272a;
-    padding-bottom: 40px;
-  }
-  .modal-left {
-    min-height: 50vh;
   }
 }
