@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Photo Search Bot Dashboard (Red Theme)</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#E11D48","background-light": "#f6f6f8",
+                        "background-dark": "#0A0A0B",
+                        "surface-dark": "#161618",
+                        "border-dark": "#262626",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display overflow-hidden h-screen flex">
+<aside class="w-64 flex flex-col border-r border-slate-200 dark:border-border-dark bg-white dark:bg-surface-dark h-full shrink-0">
+<div class="p-6 flex flex-col h-full">
+<div class="flex items-center gap-3 mb-8">
+<div class="size-10 rounded-lg bg-primary flex items-center justify-center text-white shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined">center_focus_strong</span>
+</div>
+<div class="flex flex-col">
+<h1 class="text-base font-bold leading-none tracking-tight">PhotoBot</h1>
+<p class="text-[10px] text-slate-500 dark:text-slate-400 mt-1 uppercase font-bold tracking-widest">Indexing Pro</p>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg bg-primary text-white shadow-md shadow-primary/10" href="#">
+<span class="material-symbols-outlined text-[22px]">search</span>
+<span class="text-sm font-semibold">Search Engine</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors" href="#">
+<span class="material-symbols-outlined text-[22px]">grid_view</span>
+<span class="text-sm font-medium">Assets Library</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors" href="#">
+<span class="material-symbols-outlined text-[22px]">cloud_sync</span>
+<span class="text-sm font-medium">Auto-Indexing</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors" href="#">
+<span class="material-symbols-outlined text-[22px]">label</span>
+<span class="text-sm font-medium">Smart Tags</span>
+</a>
+<div class="pt-4 pb-2">
+<p class="px-3 text-[10px] font-bold text-slate-400 uppercase tracking-widest">System</p>
+</div>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors" href="#">
+<span class="material-symbols-outlined text-[22px]">settings</span>
+<span class="text-sm font-medium">Preferences</span>
+</a>
+</nav>
+<div class="mt-auto pt-6 border-t border-slate-200 dark:border-border-dark">
+<div class="bg-slate-50 dark:bg-background-dark/50 border border-slate-100 dark:border-border-dark rounded-xl p-4 mb-4">
+<div class="flex items-center gap-2 text-primary mb-3">
+<span class="material-symbols-outlined text-[18px]">check_circle</span>
+<span class="text-xs font-bold">Index: Up to Date</span>
+</div>
+<div class="flex justify-between items-center mb-1.5">
+<p class="text-[10px] text-slate-500 dark:text-slate-400 uppercase tracking-wider font-bold">Local Cache</p>
+<p class="text-[10px] text-primary font-bold">65%</p>
+</div>
+<div class="w-full bg-slate-200 dark:bg-border-dark h-1.5 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[65%]"></div>
+</div>
+<p class="text-[11px] text-slate-500 dark:text-slate-400 mt-2">124.5 GB of 200 GB</p>
+</div>
+<button class="w-full py-2.5 bg-primary hover:bg-primary/90 text-white rounded-lg text-sm font-bold flex items-center justify-center gap-2 transition-all shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined text-[20px]">add_photo_alternate</span>
+                Scan Folder
+            </button>
+</div>
+</div></aside>
+<main class="flex-1 flex flex-col h-full min-w-0 bg-background-light dark:bg-background-dark">
+<header class="h-16 flex items-center justify-between px-8 border-b border-slate-200 dark:border-border-dark bg-white dark:bg-surface-dark shrink-0">
+<div class="flex items-center flex-1 max-w-2xl">
+<div class="relative w-full">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-primary">search</span>
+<input class="w-full bg-slate-100 dark:bg-background-dark/80 border-none rounded-xl pl-12 pr-4 py-2.5 text-sm focus:ring-2 focus:ring-primary transition-all text-slate-900 dark:text-white placeholder:text-slate-500" placeholder="Ask anything... e.g. 'cinematic red lighting portraits from 2023'" type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4 ml-6">
+<button class="p-2 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5 rounded-lg relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2.5 right-2.5 w-1.5 h-1.5 bg-primary rounded-full"></span>
+</button>
+<div class="h-8 w-[1px] bg-slate-200 dark:bg-border-dark mx-1"></div>
+<div class="flex items-center gap-3 cursor-pointer group">
+<div class="text-right hidden sm:block">
+<p class="text-xs font-bold leading-none">Alex Rivera</p>
+<p class="text-[10px] text-slate-500 dark:text-slate-400 mt-1 uppercase tracking-tighter">Pro Designer</p>
+</div>
+<div class="size-9 rounded-full bg-cover bg-center border border-slate-200 dark:border-border-dark ring-2 ring-transparent group-hover:ring-primary transition-all" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDpL_sXpuy5wsruXy5SjoSbI9SZ_WhJ2UY39kCbiNyCfPAAqXO1_s9YGXngQidmmLaltxR32ob4Edc83GFqKLHotbn1qXFiDSa7jlTF916kavjztDDi9LI1dkJDu6gyD-6Asv_V1XgzEfiL62ZsiepgIYz2BQqbH1eLKXrrMGMWbYQL9v6megUMlvm1HgKJfkC_C8eoREZECpbAk04trvtNBnk2-Oh3Hg5R-fgS3bAPb6u8I7tLdVsbLyyWW5buXg48F4HHLsqIdwM')"></div>
+</div>
+</div>
+</header>
+<div class="px-8 py-3 flex items-center justify-between border-b border-slate-200 dark:border-border-dark bg-white/50 dark:bg-surface-dark/50 backdrop-blur-md">
+<div class="flex items-center gap-3 overflow-x-auto no-scrollbar">
+<button class="flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-background-dark border border-slate-200 dark:border-border-dark rounded-lg text-xs font-semibold text-primary hover:border-primary transition-colors">
+<span class="material-symbols-outlined text-[16px]">tune</span> All Assets
+            </button>
+<button class="flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-background-dark border border-slate-200 dark:border-border-dark rounded-lg text-xs font-medium hover:border-primary transition-colors">
+<span class="material-symbols-outlined text-[16px]">palette</span> Color Palette
+                <span class="material-symbols-outlined text-[16px]">expand_more</span>
+</button>
+<button class="flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-background-dark border border-slate-200 dark:border-border-dark rounded-lg text-xs font-medium hover:border-primary transition-colors">
+<span class="material-symbols-outlined text-[16px]">aspect_ratio</span> Resolution
+                <span class="material-symbols-outlined text-[16px]">expand_more</span>
+</button>
+<button class="flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-background-dark border border-slate-200 dark:border-border-dark rounded-lg text-xs font-medium hover:border-primary transition-colors">
+<span class="material-symbols-outlined text-[16px]">description</span> File Type
+                <span class="material-symbols-outlined text-[16px]">expand_more</span>
+</button>
+</div>
+<button class="text-xs font-bold text-primary hover:text-primary/80 transition-colors px-2">Clear Filters</button>
+</div>
+<div class="flex-1 overflow-y-auto p-8 custom-scrollbar">
+<div class="flex items-center justify-between mb-8">
+<div class="flex items-center gap-4">
+<h3 class="text-sm font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400">Recent Discoveries</h3>
+<span class="px-2 py-0.5 bg-primary/10 text-primary text-[10px] font-bold rounded uppercase">48 Results</span>
+</div>
+<div class="flex items-center gap-2 bg-slate-100 dark:bg-surface-dark p-1 rounded-lg">
+<button class="p-1.5 rounded-md bg-primary text-white shadow-sm">
+<span class="material-symbols-outlined text-[18px]">grid_view</span>
+</button>
+<button class="p-1.5 rounded-md text-slate-500 dark:text-slate-400 hover:text-primary">
+<span class="material-symbols-outlined text-[18px]">list</span>
+</button>
+</div>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
+<div class="group relative bg-white dark:bg-surface-dark rounded-xl border border-slate-200 dark:border-border-dark overflow-hidden shadow-sm hover:border-primary/50 transition-all duration-300">
+<div class="aspect-[4/3] w-full bg-slate-200 dark:bg-background-dark relative overflow-hidden">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAcN3Lxismr3nSIsYiQFnsJ3Zb6VFPufJdmD-vVRd4mTkLs89WytrI9Si66NPtUlXXvW6HXtK-rlIcBBX-Bc759p6qhsLvXS9i5Lx_SElJiosieG0GfEP6QpX4Yi8utRo-8Zyo_9X0W4WTFi2iUiEQncXZeSxrY7pSaGlyCQgMvHQqClm9MXdQUv_-6bNVPn9BjiRXMPE8dTG3cFUVg0oBEMUNkGVnCxqP2r1Udb54D2LVHZMCWJgaaWA55YCxlVfQyBLLWOLHmy7Q')"></div>
+<div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
+<button class="bg-white/10 hover:bg-white/20 backdrop-blur-md p-2.5 rounded-xl text-white transition-all transform translate-y-2 group-hover:translate-y-0" title="Copy">
+<span class="material-symbols-outlined text-[22px]">content_copy</span>
+</button>
+<button class="bg-white/10 hover:bg-white/20 backdrop-blur-md p-2.5 rounded-xl text-white transition-all transform translate-y-2 group-hover:translate-y-0 delay-75" title="Open Location">
+<span class="material-symbols-outlined text-[22px]">folder_open</span>
+</button>
+<button class="bg-primary hover:bg-primary/90 p-2.5 rounded-xl text-white shadow-lg transition-all transform translate-y-2 group-hover:translate-y-0 delay-100" title="Drag to App">
+<span class="material-symbols-outlined text-[22px]">drag_pan</span>
+</button>
+</div>
+<div class="absolute top-3 left-3 flex gap-1">
+<span class="px-2 py-1 bg-black/70 backdrop-blur-md rounded text-[9px] text-white font-black uppercase tracking-widest border border-white/10">PSD</span>
+<span class="px-2 py-1 bg-primary/80 backdrop-blur-md rounded text-[9px] text-white font-black uppercase tracking-widest">4K</span>
+</div>
+</div>
+<div class="p-4">
+<p class="text-sm font-bold truncate group-hover:text-primary transition-colors">hero_background_dark_v2.psd</p>
+<div class="flex justify-between items-center mt-2">
+<p class="text-[10px] font-medium text-slate-500 dark:text-slate-400">Oct 24, 2023</p>
+<p class="text-[10px] font-bold text-slate-400">14.2 MB</p>
+</div>
+</div>
+</div>
+<div class="group relative bg-white dark:bg-surface-dark rounded-xl border border-slate-200 dark:border-border-dark overflow-hidden shadow-sm hover:border-primary/50 transition-all duration-300">
+<div class="aspect-[4/3] w-full bg-slate-200 dark:bg-background-dark relative overflow-hidden">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAmae_BuIgENftGSYjHIm3K1Rk_9EpPxhgAxqG22JtRXfbFfTX0cl5_FGeqlBlCNhHmv0ke9ENv9BHPTC8_Ayc0NmTlD2Grs5qftGj2NVY9IKtjzLEnjx0fQb6tDDntGUhtSUt_etsoEIpxUd3Npz71USSNja2S4BpeA5-YFt_zTuGQJuB8GLv79Z-a55QXnHrUqL5QNUt_ESfeTcUQ4c7pcMp6ETrtkVyjGEKGtLmxwX4rV2VVd4Cj4Nz0pgXBGfcvlrqWH_IgIC0')"></div>
+<div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
+<button class="bg-white/10 hover:bg-white/20 backdrop-blur-md p-2.5 rounded-xl text-white transition-all transform translate-y-2 group-hover:translate-y-0"><span class="material-symbols-outlined text-[22px]">content_copy</span></button>
+<button class="bg-white/10 hover:bg-white/20 backdrop-blur-md p-2.5 rounded-xl text-white transition-all transform translate-y-2 group-hover:translate-y-0 delay-75"><span class="material-symbols-outlined text-[22px]">folder_open</span></button>
+<button class="bg-primary p-2.5 rounded-xl text-white transition-all transform translate-y-2 group-hover:translate-y-0 delay-100"><span class="material-symbols-outlined text-[22px]">drag_pan</span></button>
+</div>
+<div class="absolute top-3 left-3">
+<span class="px-2 py-1 bg-black/70 backdrop-blur-md rounded text-[9px] text-white font-black uppercase tracking-widest border border-white/10">JPG</span>
+</div>
+</div>
+<div class="p-4">
+<p class="text-sm font-bold truncate group-hover:text-primary transition-colors">office_interior_concept.jpg</p>
+<div class="flex justify-between items-center mt-2">
+<p class="text-[10px] font-medium text-slate-500 dark:text-slate-400">Oct 23, 2023</p>
+<p class="text-[10px] font-bold text-slate-400">5.8 MB</p>
+</div>
+</div>
+</div>
+<div class="group relative bg-white dark:bg-surface-dark rounded-xl border border-slate-200 dark:border-border-dark overflow-hidden shadow-sm hover:border-primary/50 transition-all duration-300">
+<div class="aspect-[4/3] w-full bg-slate-200 dark:bg-background-dark relative overflow-hidden">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDztFretwCxkMGXPC-UggSvBYpqPPqC2Y7MjFcE-RojVC4E_roxGTFhzmFFrSCJzQ1QI68t1ykhci-7mBZUk719oOe2Dv32hpZ4K__dYqFc2m6FflH5jBwRxp_ldOkP_p_865eoQPX8x7kNtNJDctF4WWS72QRzdAJrbqlHbHWhi0PtI31oRjgbVwQAd4iCDYan2RBlEg2Oj-sd420gABWAkkqNTiCUtWKPjnoDAWcsSZY3vttYUObJd4rwJZm8fXBHwtpbA_UUGlU')"></div>
+<div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
+<button class="bg-white/10 hover:bg-white/20 backdrop-blur-md p-2.5 rounded-xl text-white transition-all transform translate-y-2 group-hover:translate-y-0"><span class="material-symbols-outlined text-[22px]">content_copy</span></button>
+<button class="bg-white/10 hover:bg-white/20 backdrop-blur-md p-2.5 rounded-xl text-white transition-all transform translate-y-2 group-hover:translate-y-0 delay-75"><span class="material-symbols-outlined text-[22px]">folder_open</span></button>
+<button class="bg-primary p-2.5 rounded-xl text-white transition-all transform translate-y-2 group-hover:translate-y-0 delay-100"><span class="material-symbols-outlined text-[22px]">drag_pan</span></button>
+</div>
+<div class="absolute top-3 left-3">
+<span class="px-2 py-1 bg-black/70 backdrop-blur-md rounded text-[9px] text-white font-black uppercase tracking-widest border border-white/10">PNG</span>
+</div>
+</div>
+<div class="p-4">
+<p class="text-sm font-bold truncate group-hover:text-primary transition-colors">abstract_fluid_art_01.png</p>
+<div class="flex justify-between items-center mt-2">
+<p class="text-[10px] font-medium text-slate-500 dark:text-slate-400">Oct 22, 2023</p>
+<p class="text-[10px] font-bold text-slate-400">22.4 MB</p>
+</div>
+</div>
+</div>
+<div class="group relative bg-white dark:bg-surface-dark rounded-xl border border-slate-200 dark:border-border-dark overflow-hidden shadow-sm hover:border-primary/50 transition-all duration-300">
+<div class="aspect-[4/3] w-full bg-slate-200 dark:bg-background-dark relative overflow-hidden">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBYkGqSYWKOca4vq5YnjjxUdQhY7WrsW1uEN_uAt5qcY9fkKBF1sa6mbhsLjLPuBLxr6Gh0DYCGvnstiUorRMmobyDX5MkJieHEmZ7o9dBGqaGDmj3qgOd42zdPMJJfYq6FcDf9-zX1HxaT4WoIP87C0IgDorAswx6twxpEDjeJHPOs9vvGAri0XXDjygVho7sEd5xXWfnu6dUyoVHOE0-0n9rTP_smEP514A4-T5MsJU-aLnJfI04Xz8m9LP0nX_5Isi0nuPWB7qk')"></div>
+<div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
+<button class="bg-white/10 hover:bg-white/20 backdrop-blur-md p-2.5 rounded-xl text-white transition-all transform translate-y-2 group-hover:translate-y-0"><span class="material-symbols-outlined text-[22px]">content_copy</span></button>
+<button class="bg-white/10 hover:bg-white/20 backdrop-blur-md p-2.5 rounded-xl text-white transition-all transform translate-y-2 group-hover:translate-y-0 delay-75"><span class="material-symbols-outlined text-[22px]">folder_open</span></button>
+<button class="bg-primary p-2.5 rounded-xl text-white transition-all transform translate-y-2 group-hover:translate-y-0 delay-100"><span class="material-symbols-outlined text-[22px]">drag_pan</span></button>
+</div>
+<div class="absolute top-3 left-3">
+<span class="px-2 py-1 bg-black/70 backdrop-blur-md rounded text-[9px] text-white font-black uppercase tracking-widest border border-white/10">JPG</span>
+</div>
+</div>
+<div class="p-4">
+<p class="text-sm font-bold truncate group-hover:text-primary transition-colors">system_board_macro.jpg</p>
+<div class="flex justify-between items-center mt-2">
+<p class="text-[10px] font-medium text-slate-500 dark:text-slate-400">Oct 21, 2023</p>
+<p class="text-[10px] font-bold text-slate-400">8.1 MB</p>
+</div>
+</div>
+</div>
+<div class="group relative bg-white dark:bg-surface-dark rounded-xl border border-slate-200 dark:border-border-dark overflow-hidden shadow-sm hover:border-primary/50 transition-all duration-300">
+<div class="aspect-[4/3] w-full bg-slate-200 dark:bg-background-dark relative overflow-hidden">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBkv-gBDg6DRtyazoy8s0ARsB4VblA5TbD7IOnLGMku_uFd4DegTxAF9PK1XnXl22uaBGHzev8LJxYoQPEur_aAyq0vWxSRaj3nBezZPfe2mggpRmNuR4O0_PGmw9O0cIRs-niou2gLsPzEHHTikjeauEIcG75N79awTWVd4ln4dteh0YnVG7OoKhi6dvriIItPKNwuDFEFxxXm8sWppYPtB8u07cNCCpH7XvQuS3L-0j06qxVrn0R8pQ5RjzRWPLSAxI3EwiD6nbI')"></div>
+<div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
+<button class="bg-white/10 hover:bg-white/20 backdrop-blur-md p-2.5 rounded-xl text-white transition-all transform translate-y-2 group-hover:translate-y-0"><span class="material-symbols-outlined text-[22px]">content_copy</span></button>
+<button class="bg-white/10 hover:bg-white/20 backdrop-blur-md p-2.5 rounded-xl text-white transition-all transform translate-y-2 group-hover:translate-y-0 delay-75"><span class="material-symbols-outlined text-[22px]">folder_open</span></button>
+<button class="bg-primary p-2.5 rounded-xl text-white transition-all transform translate-y-2 group-hover:translate-y-0 delay-100"><span class="material-symbols-outlined text-[22px]">drag_pan</span></button>
+</div>
+<div class="absolute top-3 left-3">
+<span class="px-2 py-1 bg-black/70 backdrop-blur-md rounded text-[9px] text-white font-black uppercase tracking-widest border border-white/10">RAW</span>
+</div>
+</div>
+<div class="p-4">
+<p class="text-sm font-bold truncate group-hover:text-primary transition-colors">landscape_nature_ref.jpg</p>
+<div class="flex justify-between items-center mt-2">
+<p class="text-[10px] font-medium text-slate-500 dark:text-slate-400">Oct 20, 2023</p>
+<p class="text-[10px] font-bold text-slate-400">12.5 MB</p>
+</div>
+</div>
+</div>
+</div>
+<div class="flex flex-col items-center mt-16 mb-12">
+<div class="w-24 h-[1px] bg-slate-200 dark:bg-border-dark mb-8"></div>
+<button class="px-8 py-3 bg-white dark:bg-surface-dark border border-slate-200 dark:border-border-dark rounded-xl text-sm font-bold hover:border-primary hover:text-primary transition-all flex items-center gap-3">
+<span class="material-symbols-outlined text-[20px]">expand_circle_down</span>
+                Load More Results
+            </button>
+</div>
+</div>
+</main>
+
+</body></html>

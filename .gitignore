@@ -9,3 +9,9 @@ photo_catalog.db-shm
 photo_catalog.db-wal
 app_config.json
 *.tmp
+
+# 3-Layer Architecture
+.tmp/
+.env
+credentials.json
+token.json

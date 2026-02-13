@@ -3,14 +3,28 @@ import json
 from dataclasses import dataclass, field, asdict
 from typing import List, Optional, Dict, Any
 
+# Maps file extensions to logical file-type categories
+FILE_TYPE_MAP: Dict[str, str] = {
+    ".jpg": "image", ".jpeg": "image", ".png": "image", ".bmp": "image",
+    ".webp": "image", ".tif": "image", ".tiff": "image",
+    ".mp4": "video", ".mov": "video", ".avi": "video",
+    ".mkv": "video", ".wmv": "video", ".webm": "video",
+    ".psd": "psd",
+}
+
+
+def get_file_type(ext: str) -> str:
+    """Return 'image', 'video', or 'psd' for a given extension."""
+    return FILE_TYPE_MAP.get(ext.lower(), "image")
+
 
 @dataclass
 class AppConfig:
     # Source directories to scan (Windows paths by default)
     source_dirs: List[str] = field(default_factory=lambda: [r"Z:\\", r"G:\\"])  # LAN and Google Drive
     # Optional filter: only index files whose path contains this substring
-    lan_filter_subfolder: str | None = None
-    # File extensions considered as photos/images
+    lan_filter_subfolder: Optional[str] = None
+    # File extensions considered as photos/images/videos/psd
     extensions: List[str] = field(
         default_factory=lambda: [
             ".jpg",
@@ -20,6 +34,15 @@ class AppConfig:
             ".webp",
             ".tif",
             ".tiff",
+            # Video formats
+            ".mp4",
+            ".mov",
+            ".avi",
+            ".mkv",
+            ".wmv",
+            ".webm",
+            # PSD
+            ".psd",
         ]
     )
     # Catalog and thumbs relative to CWD by default
@@ -33,7 +56,7 @@ class AppConfig:
     search_limit: int = 100
     # UI customization
     ui_title: str = "Vivagoal Photo Finder"
-    ui_logo_url: str | None = "/static/img/logo.svg"
+    ui_logo_url: Optional[str] = "/static/img/logo.svg"
 
     def to_dict(self) -> Dict[str, Any]:
         return asdict(self)

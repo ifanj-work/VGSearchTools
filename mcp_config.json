@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "notebooklm": {
+      "command": "C:\\Users\\1011 PC\\AppData\\Local\\Programs\\Python\\Python314\\Scripts\\notebooklm-mcp.exe",
+      "args": [],
+      "env": {
+        "PYTHONIOENCODING": "utf-8",
+        "HOME": "C:\\Users\\1011 PC"
+      }
+    }
+  }
+}

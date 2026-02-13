@@ -25,7 +25,15 @@ except Exception:
     exifread = None  # type: ignore
     EXIFREAD_AVAILABLE = False
 
-from config import AppConfig
+from config import AppConfig, get_file_type
+
+try:
+    import imageio.v3 as iio  # type: ignore
+
+    IMAGEIO_AVAILABLE = True
+except Exception:
+    iio = None  # type: ignore
+    IMAGEIO_AVAILABLE = False
 
 
 def _now_iso() -> str:
@@ -366,7 +374,13 @@ class CatalogManager:
         fid = stable_id_for_path(path)
         folder = os.path.dirname(path)
         fname = os.path.basename(path)
-        date_taken = self._read_exif_date(path) or datetime.fromtimestamp(st.st_mtime)
+        ext = os.path.splitext(fname)[1].lower()
+        file_type = get_file_type(ext)
+        # Only attempt EXIF read on image files
+        if file_type == "image":
+            date_taken = self._read_exif_date(path) or datetime.fromtimestamp(st.st_mtime)
+        else:
+            date_taken = datetime.fromtimestamp(st.st_mtime)
         date_str = date_taken.strftime("%Y-%m-%d")
         year = date_taken.year
         month = date_taken.month
@@ -380,7 +394,8 @@ class CatalogManager:
             "date": date_str,
             "year": year,
             "month": month,
-            "ext": os.path.splitext(fname)[1].lower(),
+            "ext": ext,
+            "file_type": file_type,
         }
         item["haystack"] = self._make_haystack(item)
         return item
@@ -416,11 +431,57 @@ class CatalogManager:
         return None
 
     # ---------- Thumbnails ----------
+    def _save_thumb(self, thumb: str, pil_image) -> str:
+        """Save a PIL Image as a JPEG thumbnail, return thumb path."""
+        tmp = thumb + ".tmp"
+        pil_image.save(tmp, format="JPEG", quality=85)
+        try:
+            os.replace(tmp, thumb)
+        except Exception:
+            try:
+                os.rename(tmp, thumb)
+            except Exception:
+                pass
+        return thumb
+
+    def _make_placeholder_thumb(self, thumb: str) -> str:
+        """Create a small dark placeholder thumbnail."""
+        if not PIL_AVAILABLE or Image is None:
+            return thumb
+        try:
+            tmp = thumb + ".tmp"
+            img = Image.new("RGB", (64, 64), color=(30, 30, 35))  # type: ignore
+            img.save(tmp, format="JPEG", quality=70)
+            try:
+                os.replace(tmp, thumb)
+            except Exception:
+                try:
+                    os.rename(tmp, thumb)
+                except Exception:
+                    pass
+            return thumb
+        except Exception:
+            return thumb
+
+    def _thumb_video(self, src: str, thumb: str) -> str:
+        """Extract first frame from video using imageio + ffmpeg."""
+        if not IMAGEIO_AVAILABLE or iio is None:
+            return self._make_placeholder_thumb(thumb)
+        try:
+            frame = iio.imread(src, index=0, plugin="pyav")  # type: ignore
+            im = Image.fromarray(frame)  # type: ignore
+            im = im.convert("RGB")
+            im.thumbnail((self.cfg.thumb_size, self.cfg.thumb_size))
+            return self._save_thumb(thumb, im)
+        except Exception:
+            return self._make_placeholder_thumb(thumb)
+
     def ensure_thumbnail(self, item_id: str) -> str:
         item = self.items.get(item_id)
         if not item:
             raise FileNotFoundError("Item not found")
         src = item["path"]
+        file_type = item.get("file_type", "image")
         if not PIL_AVAILABLE or Image is None:
             return src
         thumb = os.path.join(self.cfg.thumbs_dir, f"{item_id}.jpg")
@@ -431,39 +492,28 @@ class CatalogManager:
                     return thumb
         except OSError:
             pass
+
+        # Video: extract frame via imageio/ffmpeg
+        if file_type == "video":
+            return self._thumb_video(src, thumb)
+
+        # Image / PSD: use Pillow (Pillow can open PSD composites)
         try:
             tmp = thumb + ".tmp"
             with Image.open(src) as im:  # type: ignore
                 im.load()
                 im = im.convert("RGB")
                 im.thumbnail((self.cfg.thumb_size, self.cfg.thumb_size))
-                # Save to temp file first then atomically replace
                 im.save(tmp, format="JPEG", quality=85)
             try:
                 os.replace(tmp, thumb)
             except Exception:
-                # Fallback to rename if replace fails
                 try:
                     os.rename(tmp, thumb)
                 except Exception:
                     pass
         except Exception:
-            try:
-                if PIL_AVAILABLE and Image is not None:
-                    tmp = thumb + ".tmp"
-                    img = Image.new("RGB", (64, 64), color=(30, 30, 35))  # type: ignore
-                    img.save(tmp, format="JPEG", quality=70)
-                    try:
-                        os.replace(tmp, thumb)
-                    except Exception:
-                        try:
-                            os.rename(tmp, thumb)
-                        except Exception:
-                            pass
-                    return thumb
-            except Exception:
-                pass
-            return src
+            return self._make_placeholder_thumb(thumb)
         return thumb
 
     # ---------- Search ----------
@@ -475,6 +525,7 @@ class CatalogManager:
         year: Optional[int] = None,
         month: Optional[int] = None,
         sort: str = "date_desc",
+        file_type: Optional[str] = None,
     ) -> Tuple[List[Dict[str, Any]], int]:
         q = (query or "").strip()
         tokens = [t for t in q.lower().split() if t]
@@ -482,6 +533,8 @@ class CatalogManager:
         off = max(0, int(offset or 0))
 
         def matches(it: Dict[str, Any]) -> bool:
+            if file_type and it.get("file_type", "image") != file_type:
+                return False
             if year and it.get("year") != year:
                 return False
             if month and it.get("month") != month:

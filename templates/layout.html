@@ -3,26 +3,166 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Vivagoal Photo Finder</title>
+    <title>VG Search Tool</title>
     <link rel="stylesheet" href="/static/css/styles.css">
+    <link rel="stylesheet" href="/static/css/dashboard_layout.css">
   </head>
-  <body>
-    <header class="app-header">
-      <div class="brand">
-        {% if ui_logo_url %}
-        <img src="{{ ui_logo_url }}" alt="Logo" class="logo">
-        {% endif %}
-        <div class="title">{{ ui_title }}</div>
+  <body class="dashboard-layout">
+    
+    <!-- Sidebar -->
+    <aside class="dashboard-sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-icon">
+          <img src="/static/img/logo.svg" alt="VG Logo" style="width: 36px; height: 36px;">
+        </div>
+        <div class="brand-text">
+          <h1>VG Search</h1>
+          <p>Tool</p>
+        </div>
       </div>
-      <div class="actions">
-        <button id="rescanBtn" class="btn">Rescan</button>
-        <span id="scanStatus" class="status">Idle</span>
+      
+      <nav class="sidebar-nav">
+        <a href="#" class="nav-item active">
+          <span class="material-symbols-outlined">search</span>
+          Search Engine
+        </a>
+        <a href="#" class="nav-item">
+          <span class="material-symbols-outlined">grid_view</span>
+          Assets Library
+        </a>
+        <a href="#" class="nav-item">
+          <span class="material-symbols-outlined">cloud_sync</span>
+          Auto-Indexing
+        </a>
+        
+        <div class="nav-section-label">System</div>
+        
+        <a href="#" class="nav-item">
+          <span class="material-symbols-outlined">settings</span>
+          Settings
+        </a>
+      </nav>
+      
+      <div class="sidebar-footer">
+        <div class="storage-widget">
+          <div class="storage-header">
+            <span class="material-symbols-outlined" style="font-size: 18px;">check_circle</span>
+            <span class="text">Index: Active</span>
+          </div>
+          <div class="storage-info">
+            <span>Index Cache</span>
+            <span>Active</span>
+          </div>
+          <div class="storage-progress-bg">
+            <div class="storage-progress-bar" style="width: 100%"></div>
+          </div>
+        </div>
+        
+        <button id="rescanBtn" class="btn-scan">
+          <span class="material-symbols-outlined">add_photo_alternate</span>
+          Scan Folder
+        </button>
       </div>
-    </header>
-    <main class="container">
-      {% block content %}{% endblock %}
-    </main>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="dashboard-main">
+      <!-- Top Header -->
+      <header class="dashboard-header">
+        <div class="header-search">
+          <span class="material-symbols-outlined">search</span>
+          <input type="text" id="headerSearchInput" placeholder="Search photos (e.g., Jay Idzes 2024)..." autofocus>
+          <!-- Search Preview will be relocated here via JS or CSS positioning -->
+        </div>
+        
+        <div class="header-actions">
+          <div class="scan-status-container" style="flex-direction: row-reverse;">
+            <div class="status-indicator" id="statusIndicator"></div>
+            <span id="scanStatus" class="status">Idle</span>
+          </div>
+          
+          <button class="action-btn">
+            <span class="material-symbols-outlined">notifications</span>
+            <span class="notification-badge"></span>
+          </button>
+        </div>
+      </header>
+      
+      <!-- Scan Progress (Overlay or Below Header) -->
+      <div class="scan-progress" id="scanProgress" style="position: absolute; top: var(--header-height); left: 0; right: 0; z-index: 5;">
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+        </div>
+        <div class="progress-text" id="progressText">Scanning...</div>
+      </div>
+
+      <main class="dashboard-content" id="main-content">
+        {% block content %}{% endblock %}
+      </main>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="settings-modal hidden">
+      <div class="settings-overlay"></div>
+      <div class="settings-panel">
+        <div class="settings-header">
+          <h2>Settings</h2>
+          <button id="settingsClose" class="settings-close" aria-label="Close Settings">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+        
+        <div class="settings-content">
+          <!-- Source Folders Section -->
+          <div class="settings-section">
+            <div class="settings-section-header">
+              <span class="material-symbols-outlined">folder</span>
+              <h3>Source Folders</h3>
+            </div>
+            <p class="settings-description">
+              Specify the folders to scan for photos. Separate multiple paths with semicolons (;).
+            </p>
+            <div class="settings-input-group">
+              <label for="sourcesInput">Folder Paths</label>
+              <textarea 
+                id="sourcesInput" 
+                placeholder="C:\Photos\Events; D:\Pictures\Archive"
+                rows="3"
+              ></textarea>
+              <div class="settings-hint">
+                <span class="material-symbols-outlined">info</span>
+                Example: C:\Users\YourName\Pictures
+              </div>
+            </div>
+            <button id="saveSourcesBtn" class="btn primary">
+              <span class="material-symbols-outlined">save</span>
+              Save Sources
+            </button>
+          </div>
+
+          <!-- Scan Settings Section (Future) -->
+          <div class="settings-section">
+            <div class="settings-section-header">
+              <span class="material-symbols-outlined">tune</span>
+              <h3>Scan Settings</h3>
+            </div>
+            <p class="settings-description">
+              Configure how the scanner processes your photos.
+            </p>
+            <div class="settings-input-group">
+              <label>
+                <input type="checkbox" id="autoScanEnabled" disabled>
+                <span>Auto-scan on startup (Coming soon)</span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toastContainer" class="toast-container"></div>
 
     <script src="/static/js/app.js"></script>
   </body>
-  </html>
+</html>

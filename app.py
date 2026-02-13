@@ -40,19 +40,32 @@ def create_app() -> Flask:
         year = request.args.get("year")
         month = request.args.get("month")
         sort = request.args.get("sort") or "date_desc"
+        file_type = request.args.get("file_type") or None
         limit = request.args.get("limit")
         offset = request.args.get("offset")
-        year_i = int(year) if year and year.isdigit() else None
-        month_i = int(month) if month and month.isdigit() else None
-        lim = int(limit) if limit and str(limit).isdigit() else None
-        off = int(offset) if offset and str(offset).isdigit() else 0
+        try:
+            year_i = int(year) if year else None
+        except (ValueError, TypeError):
+            year_i = None
+        try:
+            month_i = int(month) if month else None
+        except (ValueError, TypeError):
+            month_i = None
+        try:
+            lim = int(limit) if limit else None
+        except (ValueError, TypeError):
+            lim = None
+        try:
+            off = int(offset) if offset else 0
+        except (ValueError, TypeError):
+            off = 0
 
-        results, total = catalog.search(q, limit=lim, offset=off, year=year_i, month=month_i, sort=sort)
+        results, total = catalog.search(q, limit=lim, offset=off, year=year_i, month=month_i, sort=sort, file_type=file_type)
         # Log query (log total matches, not just returned slice)
         try:
             qlog.info(f"query=%r total=%d returned=%d", q, total, len(results))
-        except Exception:
-            pass
+        except Exception as e:
+            qlog.error(f"Logging failed: {e}")
         # Return minimal fields for listing
         payload = []
         for it in results:
@@ -62,6 +75,9 @@ def create_app() -> Flask:
                     "filename": it["filename"],
                     "folder": it["folder"],
                     "date": it.get("date"),
+                    "size": it.get("size"),
+                    "ext": it.get("ext"),
+                    "file_type": it.get("file_type", "image"),
                     "thumb": f"/thumbnail/{it['id']}",
                 }
             )
@@ -160,13 +176,15 @@ def create_app() -> Flask:
 
         # Persist selected settings
         saved = True
+        error_msg = None
         if persist and updated:
             try:
                 # Save only keys we updated to avoid overwriting other file content unexpectedly
                 saved = save_settings(catalog.cfg, only_keys=list(updated.keys()))
-            except Exception:
+            except Exception as e:
                 saved = False
-        return jsonify({"ok": True, "saved": saved, "updated": updated})
+                error_msg = str(e)
+        return jsonify({"ok": True, "saved": saved, "updated": updated, "error": error_msg})
 
     return app
 

@@ -1,43 +1,140 @@
-{% extends 'layout.html' %}
-{% block content %}
-  <section class="hero">
-    <div class="hero-title">
-      <span class="accent">Search</span> the broadest range of Vivagoal photo assets
-    </div>
-    <div class="hero-sub">Find, preview, and download from LAN and Drive in seconds.</div>
+{% extends 'layout.html' %} {% block content %}
+<!-- Filter Bar -->
+<div class="filter-bar">
+  <div class="filter-group">
+    <button class="filter-chip active" data-filter="">
+      <span class="material-symbols-outlined">tune</span>
+      All Assets
+    </button>
+    <button class="filter-chip" data-filter="image">
+      <span class="material-symbols-outlined">image</span>
+      Images
+    </button>
+    <button class="filter-chip" data-filter="video">
+      <span class="material-symbols-outlined">videocam</span>
+      Videos
+    </button>
+    <button class="filter-chip" data-filter="psd">
+      <span class="material-symbols-outlined">palette</span>
+      PSD
+    </button>
+  </div>
+  <button class="clear-filters">Clear Filters</button>
+</div>
 
-    <div class="search-shell">
-      <input type="text" id="query" class="search-input" placeholder="Search photos (e.g., Jay Idzes 2024)" autofocus>
-      <button id="searchBtn" class="btn icon" aria-label="Search">
-        <svg class="icon-svg" viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M15.5 14h-.79l-.28-.27a6 6 0 10-.71.71l.27.28v.79l5 5 1.5-1.5-5-5zm-6.5 0a4 4 0 110-8 4 4 0 010 8z"></path>
-        </svg>
+<!-- Content Header -->
+<div class="content-header">
+  <div class="section-title">
+    Recent Discoveries
+    <span class="result-badge" id="resultCountBadge">0 Results</span>
+  </div>
+  
+  <div class="content-header-actions">
+    <div class="sort-dropdown-wrap">
+      <select id="sortDropdown" class="sort-dropdown">
+        <option value="date_desc">Latest → Oldest</option>
+        <option value="date_asc">Oldest → Latest</option>
+        <option value="name_asc">A → Z</option>
+        <option value="name_desc">Z → A</option>
+      </select>
+    </div>
+    <div class="view-toggle">
+      <button class="view-btn active" id="viewGrid" title="Grid View">
+        <span class="material-symbols-outlined">grid_view</span>
+      </button>
+      <button class="view-btn" id="viewList" title="List View">
+        <span class="material-symbols-outlined">view_list</span>
       </button>
     </div>
-  </section>
+  </div>
+</div>
 
-  <section class="config-panel">
-    <div class="panel-title">Sources</div>
-    <div class="source-bar">
-      <input type="text" id="sourcesInput" placeholder="Sources (semicolon-separated), e.g. Z:\; G:\; \\172.16.0.25\data\MULTIMEDIA ARCHIVE\VIVAGOAL\LIPUTAN">
-      <button id="saveSourcesBtn" class="btn">Save Sources & Rescan</button>
+<!-- Results Grid -->
+<section class="results-wrap" role="region" aria-live="polite">
+  <!-- Old title removed, using content-header instead -->
+  <div id="results" class="grid"></div>
+</section>
+
+<div id="modal" class="modal hidden" role="dialog" aria-modal="true">
+  <div class="modal-content">
+    <button id="modalClose" class="modal-close" aria-label="Close">
+      ×
+    </button>
+    <div class="modal-main">
+      <div class="modal-header">
+        <div>
+          <h2 id="modalFilename" class="modal-filename">Filename.jpg</h2>
+          <div id="modalFilepath" class="modal-filepath"></div>
+        </div>
+      </div>
+      <div class="modal-image-container">
+        <button
+          class="modal-nav-btn prev"
+          id="modalPrev"
+          aria-label="Previous image"
+        >
+          ‹
+        </button>
+        <img id="modalImg" alt="Preview" />
+        <button
+          class="modal-nav-btn next"
+          id="modalNext"
+          aria-label="Next image"
+        >
+          ›
+        </button>
+        <!-- Modal Counter -->
+        <div class="modal-counter" id="modalCounter">1 of 1</div>
+        <!-- Keyboard Hints -->
+        <div class="keyboard-hint">
+          <span><kbd>←</kbd> <kbd>→</kbd> Navigate</span>
+          <span><kbd>ESC</kbd> Close</span>
+        </div>
+      </div>
     </div>
-  </section>
+    <div class="modal-sidebar">
+      <div class="modal-sidebar-title">Photo Details</div>
 
-  <section class="results-wrap">
-    <div id="resultsTitle" class="results-title">Recent searches</div>
-    <div id="results" class="grid"></div>
-  </section>
+      <div class="modal-detail-group">
+        <div class="modal-detail-label">
+          <span class="material-symbols-outlined">calendar_today</span>
+          Date
+        </div>
+        <div id="modalDate" class="modal-detail-value">-</div>
+      </div>
 
-  <div id="modal" class="modal hidden">
-    <div class="modal-content">
-      <span id="modalClose" class="modal-close">×</span>
-      <img id="modalImg" alt="Preview">
-      <div class="meta" id="modalMeta"></div>
+      <div class="modal-detail-group">
+        <div class="modal-detail-label">
+          <span class="material-symbols-outlined">event</span>
+          Event
+        </div>
+        <div id="modalEvent" class="modal-detail-value">-</div>
+      </div>
+
+      <div class="modal-detail-group">
+        <div class="modal-detail-label">
+          <span class="material-symbols-outlined">hard_drive</span>
+          File Size
+        </div>
+        <div id="modalSize" class="modal-detail-value">-</div>
+      </div>
+
+      <div class="modal-detail-group">
+        <div class="modal-detail-label">Full Path</div>
+        <div id="modalPath" class="modal-detail-path"></div>
+      </div>
+
       <div class="modal-actions">
-        <a id="downloadBtn" class="btn" href="#" download>Download</a>
-        <button id="openBtn" class="btn">Open in Explorer</button>
+        <button id="openBtn" class="btn primary">
+          <span class="material-symbols-outlined">folder_open</span>
+          Open File Location
+        </button>
+        <a id="downloadBtn" class="btn" href="#" download>
+          <span class="material-symbols-outlined">download</span>
+          Download
+        </a>
       </div>
     </div>
   </div>
+</div>
 {% endblock %}
