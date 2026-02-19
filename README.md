@@ -24,7 +24,18 @@
   - Optional subfolder filtering (e.g., only index folders containing "Selects").
 - **⚡ Background Indexing**: scan process runs in the background without blocking the UI.
 
-## 🛠️ Setup & Installation
+## 🛠️ Easy Setup (No Code Required)
+
+1.  **Download & Extract**: Download the project as a ZIP file (or clone it) and extract it to a folder.
+2.  **Install**: Double-click **`setup.bat`**.
+    - This will check for Python, create a virtual environment, and install all necessary files.
+    - _Note: If you don't have Python installed, the script will tell you._
+3.  **Run**: Double-click **`run.bat`**.
+    - This will start the server and automatically open your web browser to the app.
+
+---
+
+## 👨‍💻 Developer Setup (Manual)
 
 ### Prerequisites
 
