@@ -161,6 +161,20 @@ class CatalogManager:
                     self._db_sync(self.items, set())
             except Exception:
                 pass
+            # One-time cleanup: remove duplicate FTS entries that accumulated
+            # from prior bug (INSERT OR REPLACE doesn't work on FTS5 tables).
+            try:
+                cur = self.db_conn.cursor()
+                cur.execute("SELECT id, COUNT(*) as cnt FROM photos_fts GROUP BY id HAVING cnt > 1 LIMIT 1")
+                if cur.fetchone():
+                    # Duplicates found — rebuild FTS table cleanly
+                    cur.execute("DELETE FROM photos_fts")
+                    if self.items:
+                        fts_rows = [(it["id"], it.get("haystack", "")) for it in self.items.values()]
+                        cur.executemany("INSERT INTO photos_fts (id, haystack) VALUES (?, ?)", fts_rows)
+                    self.db_conn.commit()
+            except Exception:
+                pass
 
     def _db_sync(self, items: Dict[str, Dict[str, Any]], removed_ids: set[str]) -> None:
         if not self.db_enabled or not self.db_conn:
@@ -192,9 +206,13 @@ class CatalogManager:
                     """,
                     rows,
                 )
+                # FTS5 doesn't support INSERT OR REPLACE (no PRIMARY KEY),
+                # so we must delete existing entries first to avoid duplicates.
+                fts_ids = [(it["id"],) for it in items.values()]
+                cur.executemany("DELETE FROM photos_fts WHERE id = ?", fts_ids)
                 fts_rows = [(it["id"], it.get("haystack", "")) for it in items.values()]
                 cur.executemany(
-                    "INSERT OR REPLACE INTO photos_fts (id, haystack) VALUES (?, ?)", fts_rows
+                    "INSERT INTO photos_fts (id, haystack) VALUES (?, ?)", fts_rows
                 )
             if removed_ids:
                 del_rows = [(rid,) for rid in removed_ids]
@@ -559,7 +577,11 @@ class CatalogManager:
                         (fts_q, fetch_limit),
                     )
                     ids = [row[0] for row in cur.fetchall()]
+                    seen = set()
                     for pid in ids:
+                        if pid in seen:
+                            continue
+                        seen.add(pid)
                         it = self.items.get(pid)
                         if it and matches(it):
                             results.append(it)
