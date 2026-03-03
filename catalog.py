@@ -571,10 +571,9 @@ class CatalogManager:
                 fts_q = self._fts_query(tokens)
                 if fts_q:
                     cur = self.db_conn.cursor()
-                    fetch_limit = max(lim * 5, 500)
                     cur.execute(
-                        "SELECT id FROM photos_fts WHERE photos_fts MATCH ? LIMIT ?",
-                        (fts_q, fetch_limit),
+                        "SELECT id FROM photos_fts WHERE photos_fts MATCH ?",
+                        (fts_q,),
                     )
                     ids = [row[0] for row in cur.fetchall()]
                     seen = set()

@@ -53,7 +53,7 @@ class AppConfig:
     # Thumbnail size (max dimension)
     thumb_size: int = 512
     # Search result limit
-    search_limit: int = 100
+    search_limit: int = 500
     # UI customization
     ui_title: str = "Vivagoal Photo Finder"
     ui_logo_url: Optional[str] = "/static/img/logo.svg"

@@ -68,6 +68,8 @@
         </div>
       </div>
       <div class="modal-image-container">
+        <!-- Modal Counter -->
+        <div class="modal-counter" id="modalCounter">1 of 1</div>
         <button
           class="modal-nav-btn prev"
           id="modalPrev"
@@ -76,6 +78,7 @@
           ‹
         </button>
         <img id="modalImg" alt="Preview" />
+        <video id="modalVideo" class="modal-media-hidden" controls preload="metadata"></video>
         <button
           class="modal-nav-btn next"
           id="modalNext"
@@ -83,13 +86,7 @@
         >
           ›
         </button>
-        <!-- Modal Counter -->
-        <div class="modal-counter" id="modalCounter">1 of 1</div>
-        <!-- Keyboard Hints -->
-        <div class="keyboard-hint">
-          <span><kbd>←</kbd> <kbd>→</kbd> Navigate</span>
-          <span><kbd>ESC</kbd> Close</span>
-        </div>
+
       </div>
     </div>
     <div class="modal-sidebar">

@@ -104,6 +104,16 @@ def create_app() -> Flask:
             abort(404)
         return send_file(path, as_attachment=True, download_name=item.get("filename"))
 
+    @app.get("/file/<item_id>")
+    def serve_file(item_id: str):
+        item = catalog.get_item(item_id)
+        if not item:
+            abort(404)
+        path = item.get("path")
+        if not path or not os.path.exists(path):
+            abort(404)
+        return send_file(path, as_attachment=False, conditional=True)
+
     @app.post("/open")
     def open_in_explorer():
         data: Dict[str, Any] = request.get_json(silent=True) or {}

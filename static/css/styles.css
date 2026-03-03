@@ -469,7 +469,6 @@ body {
 
 .modal-close:hover {
   background: rgba(0, 0, 0, 0.8);
-  transform: rotate(90deg);
 }
 
 .modal-image-container {
@@ -485,11 +484,18 @@ body {
   height: 100%;
 }
 
-.modal img {
+.modal-image-container img {
   width: 100%;
   height: 100%;
   object-fit: contain;
   display: block;
+}
+
+.modal-image-container video[style*="display:none"],
+.modal-image-container video[style*="display: none"] {
+  width: 0;
+  height: 0;
+  position: absolute;
 }
 
 .modal-nav-btn {

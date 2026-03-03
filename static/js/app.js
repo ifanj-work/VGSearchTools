@@ -12,6 +12,7 @@
   const modal = document.getElementById('modal');
   const modalClose = document.getElementById('modalClose');
   const modalImg = document.getElementById('modalImg');
+  const modalVideo = document.getElementById('modalVideo');
   const modalFilename = document.getElementById('modalFilename');
   const modalFilepath = document.getElementById('modalFilepath');
   const modalDate = document.getElementById('modalDate');
@@ -318,11 +319,36 @@
     modal.classList.remove('hidden');
   }
 
+  // Video extensions the browser can play natively
+  const PLAYABLE_VIDEO_EXTS = ['mp4', 'webm', 'ogg', 'mov'];
+
+  function isPlayableVideo(item) {
+    if (item.file_type !== 'video') return false;
+    // ext from API may have leading dot (e.g. ".mp4"), strip it
+    const raw = item.ext || item.filename?.split('.').pop() || '';
+    const ext = raw.replace(/^\./, '').toLowerCase();
+    return PLAYABLE_VIDEO_EXTS.includes(ext);
+  }
+
   function updateModalContent() {
     const it = lastResults[currentModalIndex];
     if (!it) return;
-    
-    modalImg.src = `/thumbnail/${it.id}`;
+
+    // Toggle img vs video using class to guarantee layout removal
+    if (isPlayableVideo(it)) {
+      modalImg.classList.add('modal-media-hidden');
+      modalImg.src = '';
+      modalVideo.classList.remove('modal-media-hidden');
+      modalVideo.src = `/file/${it.id}`;
+      modalVideo.load();
+    } else {
+      modalVideo.classList.add('modal-media-hidden');
+      modalVideo.pause();
+      modalVideo.src = '';
+      modalImg.classList.remove('modal-media-hidden');
+      modalImg.src = `/thumbnail/${it.id}`;
+    }
+
     modalFilename.textContent = it.filename || 'Unknown';
     modalFilepath.textContent = it.folder || '';
     modalDate.textContent = it.date || '-';
@@ -341,7 +367,11 @@
 
   function closeModal() { 
     modal.classList.add('hidden'); 
-    modalImg.src=''; 
+    modalImg.src = '';
+    modalVideo.pause();
+    modalVideo.src = '';
+    modalVideo.classList.add('modal-media-hidden');
+    modalImg.classList.remove('modal-media-hidden');
     currentModalIndex = -1;
   }
 
